@@ -8,16 +8,21 @@ const secret = 'mysecret';
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
-const users: { [id: string]: Socket; } = {}
+const events = ['keyDown', 'keyUp'];
+// const users: { [id: string]: Socket; } = {}
 
 io.on('connection', socket => {
+    //todo secret
+    //todo join as sender or subscriber
+
     console.log(`user connected: ${socket.id}`)
     // users[socket.id] = socket;
 
-    socket.on('key', key => {
-        //todo difference between sender and subscriber
-        socket.broadcast.emit('key', key);
-    });
+    for (const event in events) {
+        socket.on(event, key => {
+            socket.broadcast.emit(event, key);
+        });
+    }
     socket.on('disconnect', () => {
         // delete users[socket.id];
         console.log(`user disconnected ${socket.id}`);
